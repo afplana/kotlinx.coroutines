@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2016-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.coroutines.channels
@@ -7,7 +7,7 @@ package kotlinx.coroutines.channels
 import kotlinx.coroutines.*
 import kotlin.test.*
 
-class ChannelReceiveOrClosedTest : TestBase() {
+class ChannelReceiveCatchingTest : TestBase() {
     @Test
     fun testChannelOfThrowables() = runTest {
         val channel = Channel<Throwable>()
@@ -16,13 +16,13 @@ class ChannelReceiveOrClosedTest : TestBase() {
             channel.close(TestException2())
         }
 
-        val element = channel.receiveOrClosed()
-        assertTrue(element.value is TestException1)
-        assertTrue(element.valueOrNull is TestException1)
+        val element = channel.receiveCatching()
+        assertTrue(element.getOrThrow() is TestException1)
+        assertTrue(element.getOrNull() is TestException1)
 
-        val closed = channel.receiveOrClosed()
+        val closed = channel.receiveCatching()
         assertTrue(closed.isClosed)
-        assertTrue(closed.closeCause is TestException2)
+        assertTrue(closed.exceptionOrNull() is TestException2)
     }
 
     @Test
@@ -40,26 +40,26 @@ class ChannelReceiveOrClosedTest : TestBase() {
         }
 
         expect(1)
-        val element = channel.receiveOrClosed()
-        assertEquals(1, element.value)
-        assertEquals(1, element.valueOrNull)
+        val element = channel.receiveCatching()
+        assertEquals(1, element.getOrThrow())
+        assertEquals(1, element.getOrNull())
         assertEquals("Value(1)", element.toString())
-        assertTrue(ValueOrClosed.value(1) == element) // Don't box
+        assertTrue(ChannelResult.value(1) == element) // Don't box
 
         expect(4)
-        val nullElement = channel.receiveOrClosed()
-        assertNull(nullElement.value)
-        assertNull(nullElement.valueOrNull)
+        val nullElement = channel.receiveCatching()
+        assertNull(nullElement.getOrThrow())
+        assertNull(nullElement.getOrNull())
         assertEquals("Value(null)", nullElement.toString())
-        assertTrue(ValueOrClosed.value(null) == nullElement) // Don't box
+        assertTrue(ChannelResult.value(null) == nullElement) // Don't box
 
         expect(5)
-        val closed = channel.receiveOrClosed()
+        val closed = channel.receiveCatching()
         assertTrue(closed.isClosed)
 
-        val closed2 = channel.receiveOrClosed()
+        val closed2 = channel.receiveCatching()
         assertTrue(closed2.isClosed)
-        assertNull(closed2.closeCause)
+        assertNull(closed2.exceptionOrNull())
         finish(7)
     }
 
@@ -77,12 +77,12 @@ class ChannelReceiveOrClosedTest : TestBase() {
         }
 
         expect(1)
-        val element = channel.receiveOrClosed()
-        assertEquals(1u, element.value)
+        val element = channel.receiveCatching()
+        assertEquals(1u, element.getOrThrow())
 
         expect(3)
-        val element2 = channel.receiveOrClosed()
-        assertEquals((Long.MAX_VALUE - 1).toUInt(), element2.value)
+        val element2 = channel.receiveCatching()
+        assertEquals((Long.MAX_VALUE - 1).toUInt(), element2.getOrThrow())
         finish(6)
     }
 
@@ -95,7 +95,7 @@ class ChannelReceiveOrClosedTest : TestBase() {
         }
 
         expect(1)
-        val closed = channel.receiveOrClosed()
+        val closed = channel.receiveCatching()
         assertTrue(closed.isClosed)
         finish(3)
     }
@@ -103,22 +103,22 @@ class ChannelReceiveOrClosedTest : TestBase() {
     @Test
     @ExperimentalUnsignedTypes
     fun testReceiveResultChannel() = runTest {
-        val channel = Channel<ValueOrClosed<UInt>>()
+        val channel = Channel<ChannelResult<UInt>>()
         launch {
-            channel.send(ValueOrClosed.value(1u))
-            channel.send(ValueOrClosed.closed(TestException1()))
+            channel.send(ChannelResult.value(1u))
+            channel.send(ChannelResult.closed(TestException1()))
             channel.close(TestException2())
         }
 
-        val intResult = channel.receiveOrClosed()
-        assertEquals(1u, intResult.value.value)
+        val intResult = channel.receiveCatching()
+        assertEquals(1u, intResult.getOrThrow().getOrThrow())
 
-        val closeCauseResult = channel.receiveOrClosed()
-        assertTrue(closeCauseResult.value.closeCause is TestException1)
+        val closeCauseResult = channel.receiveCatching()
+        assertTrue(closeCauseResult.getOrThrow().exceptionOrNull() is TestException1)
 
-        val closeCause = channel.receiveOrClosed()
+        val closeCause = channel.receiveCatching()
         assertTrue(closeCause.isClosed)
-        assertTrue(closeCause.closeCause is TestException2)
+        assertTrue(closeCause.exceptionOrNull() is TestException2)
     }
 
     @Test
@@ -126,9 +126,9 @@ class ChannelReceiveOrClosedTest : TestBase() {
         val channel = Channel<String>(1)
         channel.send("message")
         channel.close(TestException1("OK"))
-        assertEquals("Value(message)", channel.receiveOrClosed().toString())
+        assertEquals("Value(message)", channel.receiveCatching().toString())
         // toString implementation for exception differs on every platform
-        val str = channel.receiveOrClosed().toString()
+        val str = channel.receiveCatching().toString()
         if (!str.matches("Closed\\(.*TestException1: OK\\)".toRegex()))
             error("Unexpected string: '$str'")
     }
