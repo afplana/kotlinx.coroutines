@@ -6,6 +6,7 @@ kotlin.sourceSets {
     commonTest.dependencies {
         api "org.jetbrains.kotlin:kotlin-test-common:$kotlin_version"
         api "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlin_version"
+        api group: 'org.jetbrains.kotlinx', name: 'atomicfu', version: '0.15.1'
     }
 }
 

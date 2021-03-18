@@ -628,7 +628,6 @@ public final class kotlinx/coroutines/channels/ChannelKt {
 public final class kotlinx/coroutines/channels/ChannelResult {
 	public static final field Companion Lkotlinx/coroutines/channels/ChannelResult$Companion;
 	public static final synthetic fun box-impl (Ljava/lang/Object;)Lkotlinx/coroutines/channels/ChannelResult;
-	public static synthetic fun constructor-impl (Ljava/lang/Object;Lkotlin/jvm/internal/DefaultConstructorMarker;)Ljava/lang/Object;
 	public fun equals (Ljava/lang/Object;)Z
 	public static fun equals-impl (Ljava/lang/Object;Ljava/lang/Object;)Z
 	public static final fun equals-impl0 (Ljava/lang/Object;Ljava/lang/Object;)Z

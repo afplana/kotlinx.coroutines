@@ -28,6 +28,7 @@ dependencies {
     testImplementation(kotlin("stdlib-jdk7"))
     testImplementation(kotlin("test-junit"))
     testImplementation("junit:junit:${version("junit")}")
+    implementation("org.jetbrains.kotlinx:atomicfu:0.15.1")
 }
 
 tasks.compileKotlin {

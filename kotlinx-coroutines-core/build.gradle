@@ -152,6 +152,7 @@ if (Idea.active && rootProject.ext.native_targets_enabled) {
 
 kotlin.sourceSets {
     jvmMain.dependencies {
+        api group: 'org.jetbrains.kotlinx', name: 'atomicfu', version: '0.15.1'
         compileOnly "com.google.android:annotations:4.1.1.4"
     }
 

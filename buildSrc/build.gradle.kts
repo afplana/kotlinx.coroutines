@@ -15,9 +15,11 @@ repositories {
     if (cacheRedirectorEnabled) {
         maven("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2")
         maven("https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-dev")
+        maven( "https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
     } else {
         maven("https://plugins.gradle.org/m2")
         maven("https://dl.bintray.com/kotlin/kotlin-dev")
+        maven( "https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
     }
 
     if (buildSnapshotTrain) {

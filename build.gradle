@@ -172,8 +172,10 @@ configure(subprojects.findAll { !sourceless.contains(it.name) && it.name != core
 // Configure subprojects with Kotlin sources
 configure(subprojects.findAll { !sourceless.contains(it.name) }) {
     // Use atomicfu plugin, it also adds all the necessary dependencies
-    apply plugin: 'kotlinx-atomicfu'
-
+//    apply plugin: 'kotlinx-atomicfu'
+//    atomicfu {
+//        transformJvm = false // set to false to turn off JVM transformation
+//    }
     // Configure options for all Kotlin compilation tasks
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile).all {
         kotlinOptions.freeCompilerArgs += experimentalAnnotations.collect { "-Xuse-experimental=" + it }
